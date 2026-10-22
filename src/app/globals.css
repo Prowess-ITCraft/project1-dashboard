@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans: var(--font-hanken), "Hanken Grotesk", sans-serif;
+  --font-display: var(--font-newsreader), "Newsreader", serif;
+  --font-mono: var(--font-plex), "IBM Plex Mono", ui-monospace, monospace;
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-line: var(--line);
+  --color-input: var(--input-line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-good: var(--good);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --radius-card: 12px;
+  --radius-control: 8px;
+}
+
+:root {
+  --page: #f3f4f6;
+  --surface: #ffffff;
+  --surface-2: #f7f7f8;
+  --line: #e4e4e7;
+  --input-line: #a1a1aa;
+  --ink: #18181b;
+  --muted: #52525b;
+  --accent: #1d4e89;
+  --accent-soft: #e7eef6;
+  --good: #1c7a34;
+  --good-soft: #e7f6ea;
+  --warn: #8a5a12;
+  --warn-soft: #f8f0de;
+  --bad: #9f2d2d;
+  --bad-soft: #fdecec;
+  --button-bg: #18181b;
+  --button-ink: #f4f4f5;
+  --nav-active: #e7eef6;
+  --shadow: 0 12px 40px rgb(24 24 27 / 0.08);
+  --hero-a: #e4e9f2;
+  --hero-b: #f3ebe4;
+  --hero-c: #e5f0ee;
+  color-scheme: light;
+}
+
+.dark {
+  --page: #0a0a0a;
+  --surface: #111111;
+  --surface-2: #161616;
+  --line: #1f1f1f;
+  --input-line: #404040;
+  --ink: #ededed;
+  --muted: #a1a1a1;
+  --accent: #6aa0dc;
+  --accent-soft: #14233a;
+  --good: #45b151;
+  --good-soft: #0f2414;
+  --warn: #bf8f38;
+  --warn-soft: #2a2214;
+  --bad: #d05a5a;
+  --bad-soft: #2c1212;
+  --button-bg: #ededed;
+  --button-ink: #141414;
+  --nav-active: #14233a;
+  --shadow: 0 16px 40px rgb(0 0 0 / 0.28);
+  --hero-a: #1f1d2f;
+  --hero-b: #1e1916;
+  --hero-c: #13201f;
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--page);
+  color: var(--ink);
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.hero-wash {
+  background:
+    radial-gradient(920px 420px at 0% 0%, var(--hero-a) 0%, transparent 68%),
+    radial-gradient(780px 380px at 100% 0%, var(--hero-b) 0%, transparent 70%),
+    radial-gradient(640px 320px at 100% 120%, var(--hero-c) 0%, transparent 72%),
+    var(--page);
+}
+
+.pulse-dot {
+  animation: pulse-dot 1.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.rise-in {
+  animation: rise-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(0.72);
+    opacity: 0.45;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-dot,
+  .rise-in {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-fallback {
+    background: var(--surface);
+    backdrop-filter: none;
+  }
+}

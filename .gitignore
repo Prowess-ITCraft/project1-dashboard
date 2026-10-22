@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+dist
+coverage
+test-results
+playwright-report
+blob-report
+.vercel
+*.log
+.env
+.env.*
+tsconfig.tsbuildinfo
+data/private/
+docs/contacts_2.csv
+src/features/dashboard/mock/staff.generated.json
