@@ -60,7 +60,7 @@ export function TopProjects({
   return (
     <Panel title="Top projects">
       <CardState status={status} onRetry={onRetry} empty={projects.length === 0} emptyText="No projects match these filters.">
-        <div className="hidden md:block">
+        <div className="hidden overflow-x-auto lg:block">
           <table className="w-full text-left text-sm">
             <caption className="sr-only">Projects ranked by activity this week</caption>
             <thead className="text-xs text-[var(--muted)]">
@@ -94,7 +94,7 @@ export function TopProjects({
             </tbody>
           </table>
         </div>
-        <ul className="grid gap-3 md:hidden">
+        <ul className="grid gap-3 lg:hidden">
           {projects.map((project, index) => (
             <li key={project.code} className="rounded-[8px] border border-[var(--line)] p-3">
               <p className="text-xs text-[var(--muted)]">{index + 1}</p>

@@ -93,7 +93,7 @@ function FieldCard({ project, stageLine, showModules }: { project: Project; stag
         </span>
         <span className="text-[var(--muted)]">{stageLine}</span>
       </div>
-      <div className="mt-3 grid grid-cols-9 gap-1" data-testid="state-bar">
+      <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-9 sm:gap-1" data-testid="state-bar">
         {TASK_STATES.map((state) => {
           const count = project.states[state] ?? 0;
           return (

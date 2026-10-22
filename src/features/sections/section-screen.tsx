@@ -37,9 +37,9 @@ export function SectionScreen({ spec }: { spec: SectionSpec }) {
   if (!session) return null;
 
   return (
-    <div className="mx-auto grid max-w-[1400px] gap-5 px-3 py-5 md:px-6 md:py-6">
+    <div className="mx-auto grid min-w-0 max-w-[1400px] gap-5 px-3 py-5 md:px-6 md:py-6">
       <header>
-        <h1 className="font-display text-[1.75rem] tracking-tight text-[var(--text)]">{spec.slug === "help" ? "How to use Project One" : spec.label}</h1>
+        <h1 className="font-display text-[1.6rem] leading-tight tracking-tight text-[var(--text)] sm:text-[1.75rem]">{spec.slug === "help" ? "How to use Project One" : spec.label}</h1>
         <p className="mt-1 max-w-3xl text-sm leading-6 text-[var(--muted)]">{spec.hint}</p>
       </header>
       {spec.slug === "tasks" ? <TasksView animate={animate} /> : null}
@@ -268,18 +268,18 @@ function CatalogueView({ animate }: { animate: boolean }) {
   });
   return (
     <div className="grid gap-3">
-      <div className="flex gap-4 border-b border-[var(--line)] text-sm">
+      <div className="flex min-w-0 gap-4 overflow-x-auto border-b border-[var(--line)] text-sm">
         <TabButton active={tab === "all"} onClick={() => setTab("all")}>All items</TabButton>
         <TabButton active={tab === "refresh"} onClick={() => setTab("refresh")}>Prices to refresh</TabButton>
       </div>
       <div className="flex flex-wrap gap-2">
         <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by name or code" className="field min-w-56 flex-1" />
-        <select value={kind} onChange={(event) => setKind(event.target.value)} className="field">
+        <select value={kind} onChange={(event) => setKind(event.target.value)} className="field field-limit">
           <option value="all">Products and services</option>
           <option value="product">Products</option>
           <option value="service">Services</option>
         </select>
-        <select value={category} onChange={(event) => setCategory(event.target.value)} className="field">
+        <select value={category} onChange={(event) => setCategory(event.target.value)} className="field field-limit">
           {categories.map((item) => <option key={item}>{item}</option>)}
         </select>
       </div>
@@ -320,7 +320,7 @@ function LibraryView({ animate }: { animate: boolean }) {
         <p className="mt-1 text-[var(--muted)]">BOQ as PDF or Excel. Report as Word or JSON. The same file is never added twice. Many files at once? Copy them into the inbox folder on the server.</p>
         {notice ? <p className="mt-2 text-[var(--text)]">{notice}</p> : null}
       </div>
-      <div className="flex gap-4 border-b border-[var(--line)] text-sm">
+      <div className="flex min-w-0 gap-4 overflow-x-auto border-b border-[var(--line)] text-sm">
         <TabButton active={tab === "files"} onClick={() => setTab("files")}>Files <span className="ml-1 rounded-full bg-[var(--surface-2)] px-1.5 text-xs">2</span></TabButton>
         <TabButton active={tab === "corpus"} onClick={() => setTab("corpus")}>Corpus</TabButton>
         <TabButton active={tab === "quality"} onClick={() => setTab("quality")}>Data quality</TabButton>
@@ -365,7 +365,7 @@ function LearningView({ animate }: { animate: boolean }) {
   const [frozen, setFrozen] = useState(false);
   return (
     <div className="grid gap-4">
-      <div className="flex gap-4 border-b border-[var(--line)] text-sm">
+      <div className="flex min-w-0 gap-4 overflow-x-auto border-b border-[var(--line)] text-sm">
         <TabButton active={tab === "ranker"} onClick={() => setTab("ranker")}>Product ranker</TabButton>
         <TabButton active={tab === "lines"} onClick={() => setTab("lines")}>BOQ lines</TabButton>
         <TabButton active={tab === "prices"} onClick={() => setTab("prices")}>Prices</TabButton>
@@ -381,7 +381,7 @@ function LearningView({ animate }: { animate: boolean }) {
             <div className="flex justify-between"><dt className="text-[var(--muted)]">With the customer&apos;s decision</dt><dd>6</dd></div>
             <div className="flex justify-between"><dt className="text-[var(--muted)]">Rules picked what the customer took</dt><dd>not enough data</dd></div>
           </dl>
-          <div className="mt-2 flex items-center justify-between gap-3">
+          <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h3 className="font-medium">Training sets</h3>
               <p className="text-sm text-[var(--muted)]">A frozen copy of the examples so far. Models train on one of these, never on live data, so each model can be traced to exactly what it learned from.</p>
@@ -421,7 +421,7 @@ function AccountsView({ animate }: { animate: boolean }) {
       <div className="flex justify-end">
         <button type="button" onClick={() => setAdding((value) => !value)} className="btn-primary">New account</button>
       </div>
-      <div className="flex gap-2 overflow-x-auto pb-1 text-sm">
+      <div className="flex min-w-0 gap-2 overflow-x-auto pb-1 text-sm">
         {roleFilters.map((item) => (
           <button key={item} type="button" onClick={() => setRole(item)} className={`shrink-0 rounded-full px-3 py-1 ${role === item ? "bg-[var(--accent-soft)] text-[var(--ink)]" : "text-[var(--muted)]"}`}>
             {item} {counts[item] ?? 0}
@@ -585,7 +585,20 @@ function SettingsView({ animate }: { animate: boolean }) {
 function Table({ columns, rows, animate }: { columns: string[]; rows: { id: string; cells: ReactNode[] }[]; animate: boolean }) {
   if (rows.length === 0) return <Empty>Nothing matches.</Empty>;
   return (
-    <div className="panel overflow-x-auto">
+    <>
+      <div className="grid gap-2 lg:hidden">
+        {rows.map((row) => (
+          <article key={row.id} className="panel grid gap-2 p-3">
+            {columns.map((column, cellIndex) => (
+              <div key={column} className="grid grid-cols-[6.5rem_minmax(0,1fr)] items-start gap-2 text-sm">
+                <span className="text-[var(--muted)]">{column}</span>
+                <span className="min-w-0 break-words">{row.cells[cellIndex]}</span>
+              </div>
+            ))}
+          </article>
+        ))}
+      </div>
+      <div className="panel hidden overflow-x-auto lg:block">
       <table className="data-table">
         <thead>
           <tr>{columns.map((column) => <th key={column}>{column}</th>)}</tr>
@@ -603,7 +616,8 @@ function Table({ columns, rows, animate }: { columns: string[]; rows: { id: stri
           ))}
         </tbody>
       </table>
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -614,7 +628,7 @@ function Pill({ children, tone = "neutral" }: { children: ReactNode; tone?: "ok"
 
 function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
   return (
-    <button type="button" onClick={onClick} className={`border-b-2 pb-2 ${active ? "border-[var(--accent)] text-[var(--text)]" : "border-transparent text-[var(--muted)]"}`}>
+    <button type="button" onClick={onClick} className={`shrink-0 whitespace-nowrap border-b-2 pb-2 ${active ? "border-[var(--accent)] text-[var(--text)]" : "border-transparent text-[var(--muted)]"}`}>
       {children}
     </button>
   );

@@ -151,12 +151,19 @@ body {
 .field {
   height: 2.5rem;
   width: 100%;
+  max-width: 100%;
   border-radius: 8px;
   border: 1px solid var(--line);
   background: var(--surface);
   padding: 0 0.75rem;
   font-size: 0.875rem;
   color: var(--ink);
+}
+
+@media (min-width: 640px) {
+  .field-limit {
+    width: 16rem;
+  }
 }
 
 .btn-primary,
@@ -216,7 +223,7 @@ body {
 
 .data-table {
   width: 100%;
-  min-width: 720px;
+  min-width: 640px;
   border-collapse: collapse;
   text-align: left;
   font-size: 0.875rem;
