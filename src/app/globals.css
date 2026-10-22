@@ -21,6 +21,11 @@
 }
 
 :root {
+  --text: var(--ink);
+  --border: var(--line);
+}
+
+:root {
   --page: #f3f4f6;
   --surface: #ffffff;
   --surface-2: #f7f7f8;
@@ -137,10 +142,135 @@ body {
   }
 }
 
+.panel {
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.field {
+  height: 2.5rem;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 0 0.75rem;
+  font-size: 0.875rem;
+  color: var(--ink);
+}
+
+.btn-primary,
+.btn-ghost {
+  height: 2.25rem;
+  border-radius: 8px;
+  padding: 0 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.dark .btn-primary {
+  color: #0b1220;
+}
+
+.btn-ghost {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.btn-primary:disabled,
+.btn-ghost:disabled {
+  opacity: 0.4;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.75rem;
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.pill-ok {
+  background: var(--good-soft);
+  color: var(--good);
+}
+
+.pill-bad {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
+
+.pill-warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+}
+
+.data-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.data-table th {
+  background: var(--surface-2);
+  padding: 0.65rem 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.data-table td {
+  border-top: 1px solid var(--line);
+  padding: 0.8rem 0.85rem;
+  vertical-align: top;
+}
+
+.data-table tbody tr {
+  transition: background-color 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.data-table tbody tr:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.bone {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(100deg, var(--surface-2) 20%, color-mix(in srgb, var(--ink) 8%, var(--surface-2)) 45%, var(--surface-2) 70%);
+  background-size: 220% 100%;
+  animation: bone 1.35s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+@keyframes bone {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pulse-dot,
-  .rise-in {
+  .rise-in,
+  .bone,
+  .data-table tbody tr {
     animation: none;
+    transition: none;
+  }
+
+  .bone {
+    background: var(--surface-2);
   }
 }
 

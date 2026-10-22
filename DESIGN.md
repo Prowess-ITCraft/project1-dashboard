@@ -12,4 +12,4 @@ Motion is a short count-up, a live dot, and a chart draw. It stops when the user
 
 The login page is a split: the form on the left, the line "Order. Configure. Prove." on the right. The dashboard follows the Efferd Dashboard 5 anatomy (chart, live count, ranked list, sources, vitals) filled with Project One data, in the visual language of the reference screenshots.
 
-The wordmark is the text "ITCraft". No drawn logo.
+The mark is the ITCraft logo from itcraft.net.in (`public/brand/logo.svg`).

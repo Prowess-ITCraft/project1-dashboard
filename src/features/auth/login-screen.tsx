@@ -3,15 +3,14 @@
 import { Eye, EyeSlash, LockSimple } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { BrandLogo } from "@/components/brand-logo";
 import { readSession, writeSession } from "@/lib/session";
 import { signedInUser } from "@/features/dashboard/mock/staff.sample";
-import { roleByName } from "@/features/dashboard/config/people-states";
 
-const PREVIEW_PASSWORD = "preview-local";
+const PREVIEW_EMAIL = "adi@test.com";
+const PREVIEW_PASSWORD = "test1234";
 
-type StaffLogin = { name: string; email: string | null; role: string };
-
-export function LoginScreen({ staff }: { staff: StaffLogin[] }) {
+export function LoginScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,27 +25,15 @@ export function LoginScreen({ staff }: { staff: StaffLogin[] }) {
   function signIn(nextEmail: string, nextPassword: string) {
     setError("");
     const normalised = nextEmail.trim().toLowerCase();
-    if (!normalised.endsWith("@itcraft.net.in")) {
-      setError("Use an ITCraft work email.");
+    if (normalised !== PREVIEW_EMAIL || nextPassword !== PREVIEW_PASSWORD) {
+      setError("Use adi@test.com and test1234.");
       return;
     }
-    if (nextPassword !== PREVIEW_PASSWORD) {
-      setError("That password is not the preview password.");
-      return;
-    }
-    const known = staff.find((person) => person.email?.toLowerCase() === normalised);
-    const isAditya = normalised === signedInUser.email;
-    if (!known && !isAditya) {
-      setError("That email is not on the preview staff list.");
-      return;
-    }
-    const name = isAditya ? signedInUser.name : known?.name ?? signedInUser.name;
-    const role = isAditya ? signedInUser.role : known?.role ?? roleByName[name] ?? "ITCraft";
     setPending(true);
     writeSession({
-      name,
-      email: normalised,
-      title: isAditya ? signedInUser.title : role,
+      name: signedInUser.name,
+      email: PREVIEW_EMAIL,
+      title: signedInUser.title,
     });
     router.push("/dashboard");
   }
@@ -54,7 +41,7 @@ export function LoginScreen({ staff }: { staff: StaffLogin[] }) {
   return (
     <main className="grid min-h-[100dvh] lg:grid-cols-2">
       <section className="flex flex-col px-5 py-6 sm:px-10 lg:px-14 lg:pt-10">
-        <p className="font-display text-2xl tracking-tight text-[var(--ink)]">ITCraft</p>
+        <BrandLogo className="h-12 w-auto" />
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-10">
           <h1 className="font-display text-4xl leading-[1.1] tracking-tight md:text-5xl">
             Welcome <span className="italic">back.</span>
@@ -77,7 +64,7 @@ export function LoginScreen({ staff }: { staff: StaffLogin[] }) {
                 autoComplete="username"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                placeholder="you@itcraft.net.in"
+                placeholder="adi@test.com"
                 className="h-11 rounded-[8px] border border-[var(--input-line)] bg-[var(--surface-2)] px-3 text-[var(--ink)]"
               />
             </label>
@@ -104,7 +91,7 @@ export function LoginScreen({ staff }: { staff: StaffLogin[] }) {
                   {showPassword ? <EyeSlash aria-hidden /> : <Eye aria-hidden />}
                 </button>
               </span>
-              <span className="text-sm text-[var(--muted)]">Preview password: preview-local</span>
+              <span className="text-sm text-[var(--muted)]">Preview: adi@test.com / test1234</span>
             </div>
             {error ? (
               <p className="text-sm text-[var(--bad)]" role="alert">
@@ -121,7 +108,7 @@ export function LoginScreen({ staff }: { staff: StaffLogin[] }) {
             <button
               type="button"
               className="h-11 rounded-[8px] border border-[var(--line)] text-sm active:translate-y-px"
-              onClick={() => signIn(signedInUser.email, PREVIEW_PASSWORD)}
+              onClick={() => signIn(PREVIEW_EMAIL, PREVIEW_PASSWORD)}
             >
               Preview as admin
             </button>

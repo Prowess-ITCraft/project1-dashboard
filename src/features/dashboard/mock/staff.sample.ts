@@ -26,7 +26,7 @@ export const sampleStaff: StaffMember[] = names.map(([name, role]) => ({
 
 export const signedInUser = {
   name: "Aditya Kumar",
-  email: "aditya@itcraft.net.in",
+  email: "adi@test.com",
   company: "ITCraft",
   initials: "AK",
   color: avatarColor("Aditya Kumar"),

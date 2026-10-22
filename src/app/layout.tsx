@@ -28,6 +28,7 @@ const plex = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "Project One",
   description: "ITCraft internal dashboard for orders, configuration, and completion certificates.",
+  icons: { icon: "/brand/logo.svg" },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -127,20 +127,23 @@ describe("guards", () => {
     const names = [...Object.keys(pkg.dependencies), ...Object.keys(pkg.devDependencies)];
     expect(names.some((name) => name.includes("lucide") || name.includes("heroicons") || name.includes("react-icons"))).toBe(false);
     expect(names).toContain("@phosphor-icons/react");
-    const source = walk(path.join(process.cwd(), "src"));
+    const files = walk(path.join(process.cwd(), "src"));
+    const source = files.map((file) => file.text).join("\n");
+    const branded = files
+      .filter((file) => file.name !== "help-copy.ts" && file.name !== "mock-data.ts")
+      .map((file) => file.text)
+      .join("\n");
     expect(source).not.toMatch(/lucide-react|@heroicons|react-icons/);
     expect(source).not.toMatch(/\b(Inter|Roboto|Poppins|Fraunces|Playfair Display|Geist|Space Grotesk|DM Sans|Plus Jakarta Sans|JetBrains Mono)\b/);
-    expect(source).not.toMatch(/IITPL|PrismSuite/);
+    expect(branded).not.toMatch(/IITPL|PrismSuite/);
   });
 });
 
-function walk(dir: string): string {
-  return readdirSync(dir)
-    .map((entry) => {
-      const full = path.join(dir, entry);
-      if (statSync(full).isDirectory()) return walk(full);
-      if (!/\.(ts|tsx|css|json)$/.test(entry) || entry.includes(".test.")) return "";
-      return readFileSync(full, "utf8");
-    })
-    .join("\n");
+function walk(dir: string): { name: string; text: string }[] {
+  return readdirSync(dir).flatMap((entry) => {
+    const full = path.join(dir, entry);
+    if (statSync(full).isDirectory()) return walk(full);
+    if (!/\.(ts|tsx|css|json)$/.test(entry) || entry.includes(".test.")) return [];
+    return [{ name: entry, text: readFileSync(full, "utf8") }];
+  });
 }

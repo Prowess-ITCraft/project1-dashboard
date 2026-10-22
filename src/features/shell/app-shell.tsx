@@ -23,7 +23,11 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { useTheme } from "next-themes";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState, type ComponentType, type ReactNode } from "react";
+import { sections } from "@/features/sections/catalog";
+import { BrandLogo } from "@/components/brand-logo";
 import { clearSession, type Session } from "@/lib/session";
 import { cn } from "@/lib/utils";
 
@@ -31,45 +35,36 @@ type Icon = ComponentType<{ className?: string; weight?: "regular" | "fill"; "ar
 
 type NavItem = {
   label: string;
+  href: string;
   icon: Icon;
-  count?: number;
-  active?: boolean;
 };
 
-const groups: { label: string; items: NavItem[] }[] = [
-  {
-    label: "Workspace",
-    items: [
-      { label: "My tasks", icon: ClipboardText, count: 3 },
-      { label: "Dashboard", icon: SquaresFour, active: true },
-      { label: "Review", icon: SealCheck, count: 3 },
-      { label: "Projects", icon: FolderSimple },
-      { label: "Customers", icon: Buildings },
-    ],
-  },
-  {
-    label: "Commercial",
-    items: [
-      { label: "Catalogue", icon: Package },
-      { label: "Library", icon: Books },
-    ],
-  },
-  {
-    label: "People",
-    items: [
-      { label: "Learning", icon: GraduationCap },
-      { label: "Accounts", icon: UsersThree },
-    ],
-  },
-  {
-    label: "Support",
-    items: [
-      { label: "Messages", icon: ChatCircleDots, count: 2 },
-      { label: "Help", icon: Question },
-      { label: "Settings", icon: GearSix },
-    ],
-  },
-];
+const icons: Record<string, Icon> = {
+  tasks: ClipboardText,
+  dashboard: SquaresFour,
+  review: SealCheck,
+  projects: FolderSimple,
+  customers: Buildings,
+  catalogue: Package,
+  library: Books,
+  learning: GraduationCap,
+  accounts: UsersThree,
+  messages: ChatCircleDots,
+  help: Question,
+  settings: GearSix,
+};
+
+const groupOrder = ["Workspace", "Commercial", "People", "Support"] as const;
+
+const groups: { label: string; items: NavItem[] }[] = groupOrder.map((label) => ({
+  label,
+  items: [
+    ...(label === "Workspace" ? [{ label: "Dashboard", href: "/dashboard", icon: icons.dashboard }] : []),
+    ...sections
+      .filter((item) => item.group === label)
+      .map((item) => ({ label: item.label, href: `/${item.slug}`, icon: icons[item.slug] })),
+  ],
+}));
 
 export function AppShell({
   session,
@@ -84,6 +79,7 @@ export function AppShell({
   children: ReactNode;
   syncLabel?: string;
 }) {
+  const pathname = usePathname();
   const { resolvedTheme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const [rail, setRail] = useState(false);
@@ -104,10 +100,12 @@ export function AppShell({
           rail ? "md:w-[72px]" : "md:w-[72px] lg:w-[240px]",
         )}
       >
-        <div className="flex h-16 items-center gap-3 border-b border-[var(--line)] px-4">
-          <span className={cn("hidden min-w-0 px-1 lg:block", rail && "lg:hidden")}>
+        <div className="flex h-16 items-center gap-3 border-b border-[var(--line)] px-3">
+          <BrandLogo variant="mark" className={rail ? undefined : "lg:hidden"} />
+          <BrandLogo className={cn("hidden h-10 w-auto shrink-0", rail ? "" : "lg:block")} />
+          <span className={cn("hidden min-w-0 lg:block", rail && "lg:hidden")}>
             <span className="block truncate text-sm font-medium">Project One</span>
-            <span className="block truncate text-xs text-[var(--muted)]">ITCraft, Internal</span>
+            <span className="block truncate text-xs text-[var(--muted)]">Internal</span>
           </span>
           <button type="button" className="ml-auto md:hidden" aria-label="Close menu" onClick={() => setOpen(false)}>
             <X aria-hidden />
@@ -118,40 +116,25 @@ export function AppShell({
             <div key={group.label}>
               <p className={cn("hidden px-2 pb-2 text-xs text-[var(--muted)] lg:block", rail && "lg:hidden")}>{group.label}</p>
               <ul className="grid gap-1">
-                {group.items.map((item) => (
-                  <li key={item.label}>
-                    {item.active ? (
-                      <a
-                        href="/dashboard"
-                        aria-current="page"
-                        className="flex h-10 items-center gap-3 rounded-[8px] bg-[var(--nav-active)] px-2 text-sm text-[var(--accent)]"
+                {group.items.map((item) => {
+                  const current = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        aria-current={current ? "page" : undefined}
+                        onClick={() => setOpen(false)}
+                        className={cn(
+                          "flex h-10 items-center gap-3 rounded-[8px] px-2 text-sm",
+                          current ? "bg-[var(--nav-active)] text-[var(--accent)]" : "text-[var(--muted)] hover:text-[var(--ink)]",
+                        )}
                       >
-                        <item.icon weight="fill" aria-hidden />
+                        <item.icon weight={current ? "fill" : "regular"} aria-hidden />
                         <span className={cn("hidden truncate lg:inline", rail && "lg:hidden")}>{item.label}</span>
-                      </a>
-                    ) : (
-                      <span className="group relative block">
-                        <span
-                          tabIndex={0}
-                          aria-disabled="true"
-                          className="flex h-10 cursor-not-allowed items-center gap-3 rounded-[8px] px-2 text-sm text-[var(--muted)] opacity-70"
-                        >
-                          <item.icon aria-hidden />
-                          <span className={cn("hidden truncate lg:inline", rail && "lg:hidden")}>{item.label}</span>
-                          {item.count ? (
-                            <span className={cn("ml-auto hidden font-mono text-xs lg:inline", rail && "lg:hidden")}>{item.count}</span>
-                          ) : null}
-                        </span>
-                        <span
-                          role="tooltip"
-                          className="pointer-events-none absolute left-12 top-1 z-20 hidden rounded-[8px] bg-[var(--ink)] px-2 py-1 text-xs text-[var(--page)] group-hover:block group-focus-within:block"
-                        >
-                          Not part of this preview
-                        </span>
-                      </span>
-                    )}
-                  </li>
-                ))}
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}
@@ -195,7 +178,7 @@ export function AppShell({
             <span>Project One</span>
             <span className="rounded-full border border-[var(--line)] px-2 py-0.5 text-xs text-[var(--muted)]">Production</span>
             <span className="text-[var(--muted)]">/</span>
-            <span>Dashboard</span>
+            <span>{groups.flatMap((group) => group.items).find((item) => item.href === pathname)?.label ?? "Dashboard"}</span>
           </p>
           <button
             type="button"

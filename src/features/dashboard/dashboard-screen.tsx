@@ -2,8 +2,6 @@
 
 import { DownloadSimple, Plus } from "@phosphor-icons/react";
 import { useEffect, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
-import { useRouter } from "next/navigation";
-import { AppShell, leavePreview } from "@/features/shell/app-shell";
 import { clockLabel } from "@/lib/format";
 import { readSession, type Session } from "@/lib/session";
 import { projectsCsv } from "./mock/query";
@@ -30,30 +28,22 @@ const tabs = [
 ] as const;
 
 export function DashboardScreen({ staff }: { staff: StaffMember[] }) {
-  const router = useRouter();
   const { filters, update } = useFilters();
   const { status, view, reload, paused, setPaused } = useDashboardData(filters);
   const reduced = usePrefersReducedMotion();
-  const [session, setSession] = useState<Session | null>(null);
+  const [session] = useState<Session | null>(() => (typeof window === "undefined" ? null : readSession()));
   const [palette, setPalette] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [sourceMode, setSourceMode] = useState<"entry" | "order">("entry");
   const [siteOpen, setSiteOpen] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSession(readSession());
-  }, []);
-
-  useEffect(() => {
-    function onKey(event: globalThis.KeyboardEvent) {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        setPalette(true);
-      }
+    function onSearch(event: Event) {
+      event.preventDefault();
+      setPalette(true);
     }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("p1-search", onSearch);
+    return () => window.removeEventListener("p1-search", onSearch);
   }, []);
 
   useEffect(() => {
@@ -62,7 +52,7 @@ export function DashboardScreen({ staff }: { staff: StaffMember[] }) {
     return () => window.clearTimeout(id);
   }, [toast]);
 
-  if (!session) return <p className="p-6 text-sm text-[var(--muted)]">Loading the preview</p>;
+  if (!session) return null;
 
   const sites = [...new Set((view?.projects ?? []).map((project) => project.site))];
   const counts = {
@@ -73,16 +63,7 @@ export function DashboardScreen({ staff }: { staff: StaffMember[] }) {
   };
 
   return (
-    <AppShell
-      session={session}
-      syncLabel="All sent"
-      onSearch={() => setPalette(true)}
-      onSignOut={() => {
-        leavePreview();
-        router.replace("/");
-      }}
-    >
-      <div className="mx-auto grid max-w-[1400px] gap-4 px-3 py-5 md:px-6 md:py-6">
+    <div className="mx-auto grid max-w-[1400px] gap-4 px-3 py-5 md:px-6 md:py-6">
         <header>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="font-display text-4xl leading-[1.1] tracking-tight md:text-5xl">Dashboard</h1>
@@ -267,7 +248,6 @@ export function DashboardScreen({ staff }: { staff: StaffMember[] }) {
             </div>
           ) : null}
         </div>
-      </div>
       <CommandPalette
         open={palette}
         onClose={() => setPalette(false)}
@@ -283,7 +263,7 @@ export function DashboardScreen({ staff }: { staff: StaffMember[] }) {
           {toast}
         </p>
       ) : null}
-    </AppShell>
+    </div>
   );
 }
 
