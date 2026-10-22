@@ -86,24 +86,40 @@ export function AppShell({
   const [dialog, setDialog] = useState<"new" | "alerts" | null>(null);
   const [mounted, setMounted] = useState(false);
 
+  const pageLabel = groups.flatMap((group) => group.items).find((item) => item.href === pathname)?.label ?? "Dashboard";
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
   return (
     <div className="min-h-[100dvh] bg-[var(--page)] text-[var(--ink)]">
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-40 flex w-[240px] flex-col border-r border-[var(--line)] bg-[var(--surface)]",
+          "fixed inset-y-0 left-0 z-40 flex w-[min(100vw-3rem,280px)] flex-col border-r border-[var(--line)] bg-[var(--surface)]",
           open ? "flex" : "hidden md:flex",
-          rail ? "md:w-[72px]" : "md:w-[72px] lg:w-[240px]",
+          rail ? "md:w-[72px]" : "md:w-[240px]",
         )}
       >
         <div className="flex h-16 items-center gap-3 border-b border-[var(--line)] px-3">
-          <BrandLogo variant="mark" className={rail ? undefined : "lg:hidden"} />
-          <BrandLogo className={cn("hidden h-10 w-auto shrink-0", rail ? "" : "lg:block")} />
-          <span className={cn("hidden min-w-0 lg:block", rail && "lg:hidden")}>
+          <BrandLogo variant="mark" className={cn("hidden md:inline-grid", !rail && "md:hidden")} />
+          <BrandLogo className={cn("h-10 w-auto shrink-0", rail && "md:hidden")} />
+          <span className={cn("min-w-0", rail && "md:hidden")}>
             <span className="block truncate text-sm font-medium">Project One</span>
             <span className="block truncate text-xs text-[var(--muted)]">Internal</span>
           </span>
@@ -114,7 +130,7 @@ export function AppShell({
         <nav className="flex-1 space-y-5 overflow-y-auto px-2 py-4" aria-label="Primary">
           {groups.map((group) => (
             <div key={group.label}>
-              <p className={cn("hidden px-2 pb-2 text-xs text-[var(--muted)] lg:block", rail && "lg:hidden")}>{group.label}</p>
+              <p className={cn("px-2 pb-2 text-xs text-[var(--muted)]", rail && "md:hidden")}>{group.label}</p>
               <ul className="grid gap-1">
                 {group.items.map((item) => {
                   const current = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -130,7 +146,7 @@ export function AppShell({
                         )}
                       >
                         <item.icon weight={current ? "fill" : "regular"} aria-hidden />
-                        <span className={cn("hidden truncate lg:inline", rail && "lg:hidden")}>{item.label}</span>
+                        <span className={cn("min-w-0 truncate", rail && "md:hidden")}>{item.label}</span>
                       </Link>
                     </li>
                   );
@@ -148,7 +164,7 @@ export function AppShell({
                 .slice(0, 2)
                 .join("")}
             </span>
-            <span className={cn("hidden min-w-0 lg:block", rail && "lg:hidden")}>
+            <span className={cn("min-w-0", rail && "md:hidden")}>
               <span className="block truncate text-sm">{session.name}</span>
               <span className="block truncate text-xs text-[var(--muted)]">{session.title}</span>
             </span>
@@ -159,37 +175,39 @@ export function AppShell({
         </div>
       </aside>
 
-      <div className={cn("md:pl-[72px]", rail ? "lg:pl-[72px]" : "lg:pl-[240px]")}>
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-[var(--line)] bg-[var(--surface)] px-3 md:px-5">
-          <button type="button" className="grid size-9 place-items-center rounded-[8px] md:hidden" aria-label="Open menu" onClick={() => setOpen(true)}>
+      <div className={cn("min-w-0 overflow-x-clip", rail ? "md:pl-[72px]" : "md:pl-[240px]")}>
+        <header className="sticky top-0 z-30 flex h-16 min-w-0 items-center gap-2 border-b border-[var(--line)] bg-[var(--surface)] px-3 md:gap-3 md:px-5">
+          <button type="button" className="grid size-9 shrink-0 place-items-center rounded-[8px] md:hidden" aria-label="Open menu" onClick={() => setOpen(true)}>
             <List aria-hidden />
           </button>
           <button
             type="button"
-            className="hidden size-9 place-items-center rounded-[8px] lg:grid"
+            className="hidden size-9 shrink-0 place-items-center rounded-[8px] md:grid"
             aria-label={rail ? "Expand sidebar" : "Collapse sidebar"}
             onClick={() => setRail((value) => !value)}
           >
             <List aria-hidden />
           </button>
-          <p className="hidden min-w-0 items-center gap-2 truncate text-sm md:flex">
+          <p className="min-w-0 flex-1 truncate text-sm font-medium lg:hidden">{pageLabel}</p>
+          <p className="hidden min-w-0 flex-1 items-center gap-2 truncate text-sm lg:flex">
             <span className="text-[var(--muted)]">ITCraft</span>
             <span className="text-[var(--muted)]">/</span>
             <span>Project One</span>
-            <span className="rounded-full border border-[var(--line)] px-2 py-0.5 text-xs text-[var(--muted)]">Production</span>
+            <span className="hidden rounded-full border border-[var(--line)] px-2 py-0.5 text-xs text-[var(--muted)] xl:inline">Production</span>
             <span className="text-[var(--muted)]">/</span>
-            <span>{groups.flatMap((group) => group.items).find((item) => item.href === pathname)?.label ?? "Dashboard"}</span>
+            <span className="truncate">{pageLabel}</span>
           </p>
           <button
             type="button"
             onClick={onSearch}
-            className="ml-auto flex h-10 w-full max-w-xs items-center gap-2 rounded-[8px] border border-[var(--input-line)] bg-[var(--surface-2)] px-3 text-sm text-[var(--muted)]"
+            aria-label="Search customers, projects, tasks"
+            className="ml-auto grid size-10 shrink-0 place-items-center rounded-[8px] border border-[var(--input-line)] bg-[var(--surface-2)] text-sm text-[var(--muted)] lg:flex lg:h-10 lg:w-full lg:max-w-xs lg:shrink lg:items-center lg:justify-start lg:gap-2 lg:px-3"
           >
             <MagnifyingGlass aria-hidden />
-            <span className="truncate">Search customers, projects, tasks</span>
-            <span className="ml-auto hidden font-mono text-xs sm:inline">Ctrl K</span>
+            <span className="hidden truncate lg:inline">Search customers, projects, tasks</span>
+            <span className="ml-auto hidden font-mono text-xs xl:inline">Ctrl K</span>
           </button>
-          <span className="hidden items-center gap-1 rounded-full bg-[var(--good-soft)] px-2.5 py-1 text-xs text-[var(--good)] sm:inline-flex">
+          <span className="hidden shrink-0 items-center gap-1 rounded-full bg-[var(--good-soft)] px-2.5 py-1 text-xs text-[var(--good)] lg:inline-flex">
             <span className="size-1.5 rounded-full bg-[var(--good)]" aria-hidden />
             {syncLabel}
           </span>
@@ -206,14 +224,14 @@ export function AppShell({
           </button>
           <button
             type="button"
-            className="hidden h-10 items-center gap-1 rounded-[8px] bg-[var(--button-bg)] px-3 text-sm font-medium text-[var(--button-ink)] active:translate-y-px sm:inline-flex"
+            className="hidden h-10 shrink-0 items-center gap-1 rounded-[8px] bg-[var(--button-bg)] px-3 text-sm font-medium text-[var(--button-ink)] active:translate-y-px lg:inline-flex"
             onClick={() => setDialog("new")}
           >
             <Plus aria-hidden />
             New project
           </button>
         </header>
-        <div className="hero-wash">{children}</div>
+        <div className="hero-wash min-w-0">{children}</div>
       </div>
 
       {open ? <button type="button" aria-label="Close menu overlay" className="fixed inset-0 z-30 bg-black/50 md:hidden" onClick={() => setOpen(false)} /> : null}

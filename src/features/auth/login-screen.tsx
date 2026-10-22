@@ -43,7 +43,7 @@ export function LoginScreen() {
       <section className="flex flex-col px-5 py-6 sm:px-10 lg:px-14 lg:pt-10">
         <BrandLogo className="h-12 w-auto" />
         <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center py-10">
-          <h1 className="font-display text-4xl leading-[1.1] tracking-tight md:text-5xl">
+          <h1 className="font-display text-3xl leading-[1.1] tracking-tight sm:text-4xl md:text-5xl">
             Welcome <span className="italic">back.</span>
           </h1>
           <p className="mt-3 max-w-[42ch] text-base leading-relaxed text-[var(--muted)]">

@@ -63,10 +63,10 @@ export function DashboardScreen({ staff }: { staff: StaffMember[] }) {
   };
 
   return (
-    <div className="mx-auto grid max-w-[1400px] gap-4 px-3 py-5 md:px-6 md:py-6">
-        <header>
+    <div className="mx-auto grid min-w-0 max-w-[1400px] gap-4 px-3 py-5 md:px-6 md:py-6">
+        <header className="min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="font-display text-4xl leading-[1.1] tracking-tight md:text-5xl">Dashboard</h1>
+            <h1 className="font-display text-3xl leading-[1.1] tracking-tight sm:text-4xl md:text-5xl">Dashboard</h1>
             <span className="inline-flex items-center gap-2 rounded-full bg-[var(--good-soft)] px-2.5 py-1 text-xs text-[var(--good)]">
               <span className="pulse-dot size-1.5 rounded-full bg-[var(--good)]" aria-hidden />
               Field work active
@@ -75,7 +75,7 @@ export function DashboardScreen({ staff }: { staff: StaffMember[] }) {
           <p className="mt-2 text-sm text-[var(--muted)]">
             {counts.projects} projects across {view?.customers.length ?? 3} customers. Updated {view ? clockLabel(view.nowIso) : "14:06 IST"}.
           </p>
-          <div className="mt-4 flex gap-4 border-b border-[var(--line)]" role="tablist" aria-label="Dashboard sections" onKeyDown={(event) => moveTab(event, filters.tab, (tab) => update({ tab }))}>
+          <div className="mt-4 flex min-w-0 gap-4 overflow-x-auto border-b border-[var(--line)]" role="tablist" aria-label="Dashboard sections" onKeyDown={(event) => moveTab(event, filters.tab, (tab) => update({ tab }))}>
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -85,7 +85,7 @@ export function DashboardScreen({ staff }: { staff: StaffMember[] }) {
                 aria-selected={filters.tab === tab.id}
                 aria-controls={`panel-${tab.id}`}
                 tabIndex={filters.tab === tab.id ? 0 : -1}
-                className={`-mb-px border-b-2 px-1 pb-2 text-sm ${filters.tab === tab.id ? "border-[var(--accent)] text-[var(--ink)]" : "border-transparent text-[var(--muted)]"}`}
+                className={`-mb-px shrink-0 whitespace-nowrap border-b-2 px-1 pb-2 text-sm ${filters.tab === tab.id ? "border-[var(--accent)] text-[var(--ink)]" : "border-transparent text-[var(--muted)]"}`}
                 onClick={() => update({ tab: tab.id })}
               >
                 {tab.label} {counts[tab.id] ?? ""}
@@ -94,7 +94,7 @@ export function DashboardScreen({ staff }: { staff: StaffMember[] }) {
           </div>
         </header>
 
-        <div role="tabpanel" id={`panel-${filters.tab}`} aria-labelledby={`tab-${filters.tab}`} className="grid gap-4">
+        <div role="tabpanel" id={`panel-${filters.tab}`} aria-labelledby={`tab-${filters.tab}`} className="grid min-w-0 gap-4">
           {filters.tab === "projects" ? (
             <>
               <div className="flex flex-wrap items-center gap-2">
@@ -149,7 +149,7 @@ export function DashboardScreen({ staff }: { staff: StaffMember[] }) {
                 </span>
                 <button
                   type="button"
-                  className="ml-auto inline-flex h-9 items-center gap-1 rounded-[8px] border border-[var(--line)] px-3 text-sm"
+                  className="inline-flex h-9 items-center gap-1 rounded-[8px] border border-[var(--line)] px-3 text-sm sm:ml-auto"
                   onClick={() => {
                     if (!view) return;
                     downloadCsv(projectsCsv(view.projects));

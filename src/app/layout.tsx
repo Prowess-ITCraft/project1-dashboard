@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Hanken_Grotesk, IBM_Plex_Mono, Newsreader } from "next/font/google";
 import { Providers } from "@/components/providers";
 import "./globals.css";
@@ -24,6 +24,11 @@ const plex = IBM_Plex_Mono({
   variable: "--font-plex",
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
   title: "Project One",
